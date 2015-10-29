@@ -76,7 +76,7 @@ module.exports = class Sender {
       requestFunction(options, (error, response, body) => {
         var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
         if (error || !is_valid) {
-          return reject(body);
+          return reject(error);
         } else {
           return resolve(body);
         }
