@@ -26,7 +26,7 @@ module.exports = class Sender {
     return buf.toString('hex');
   }
 
-  prepare(err, extra_values) {
+  _prepare(err, extra_values) {
     return new Promise((resolve, reject) => {
       parseException(err, (err, parse_result) => {
 
@@ -59,4 +59,34 @@ module.exports = class Sender {
       });
     });
   }
+
+  _send(requestFunction, postUri) {
+    var options = {
+      method: 'post',
+      url: postUri,
+      headers: {
+        'User-Agent': 'azk'
+      },
+      json: true,
+      body: JSON.stringify(this.payload)
+    };
+
+    return new Promise((resolve, reject) => {
+      requestFunction(options, (error, response, body) => {
+        var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
+        if (error || !is_valid) {
+          return reject(body);
+        } else {
+          return resolve(body);
+        }
+      });
+    });
+  }
+
+  send(opts) {
+    var requestFunction = opts.libs.requestFunction || require('request');
+    return this._prepare(opts.err, opts.extra_values)
+    .then(() => { return this._send(requestFunction, opts.url); });
+  }
+
 };

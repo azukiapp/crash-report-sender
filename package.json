@@ -1,0 +1,35 @@
+{
+  "name": "bug-report-sender",
+  "version": "0.1.0",
+  "description": "bug report sender",
+  "main": "index.js",
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "azk-dev": "^0.1.0",
+    "node-uuid": "^1.4.3",
+    "lodash.merge": "^3.3.2",
+    "babel-runtime": "^5.8.29"
+  },
+  "devDependencies": {
+    "source-map-support": "^0.3.3"
+  },
+  "scripts": {
+    "test": "gulp watch:test",
+    "deploy": "./node_modules/.bin/npm-deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azukiapp/bug-report-sender.git"
+  },
+  "keywords": [
+    "azk",
+    "bug",
+    "report"
+  ],
+  "author": "saitodisse@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/azukiapp/bug-report-sender/issues"
+  },
+  "homepage": "https://github.com/azukiapp/bug-report-sender#readme"
+}

@@ -10,12 +10,40 @@ describe('Sender:', function() {
 
   it("should parse an error", function() {
     var sender = new Sender();
-    var err = new Error('my Exception');
+    var err = new Error('My Exception');
 
-    return sender.prepare(err, {extra: 'EXTRA VALUE'})
+    return sender._prepare(err, {extra: 'EXTRA VALUES'})
     .then(function(result) {
       h.expect(result.body.trace.frames).to.not.be.undefined;
       h.expect(result.body.trace.exception).to.not.be.undefined;
+    });
+  });
+
+  it("should send error", function() {
+    var sender = new Sender();
+    var error_to_send = new Error('My Exception');
+
+    var fakeRequestLib = function(options, callback) {
+      return callback(null,
+                      // response
+                      {statusCode: 200},
+                      // body (string)
+                      '{"result": "OK"}');
+    };
+
+    var opts = {
+      err: error_to_send,
+      extra_values: {
+        extra1: 'EXTRA VALUE 1',
+        extra2: 'EXTRA VALUE 2'
+      },
+      libs: {requestFunction: fakeRequestLib},
+      url: 'SOME_URL',
+    };
+
+    return sender.send(opts)
+    .then(function(result) {
+      h.expect(result).to.eql('{"result": "OK"}');
     });
   });
 
