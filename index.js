@@ -1,1 +1,1 @@
-module.exports = require('./lib/sender');
+module.exports = require('./lib/src/sender');
