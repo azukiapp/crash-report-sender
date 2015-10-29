@@ -2,6 +2,7 @@ import { parseException } from './stack-trace-parser';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import os from 'os';
+import BB from 'bluebird';
 
 module.exports = class Sender {
   constructor(opt) {
@@ -27,7 +28,7 @@ module.exports = class Sender {
   }
 
   _prepare(err, extra_values) {
-    return new Promise((resolve, reject) => {
+    return new BB.Promise((resolve, reject) => {
       parseException(err, (err, parse_result) => {
 
         if (err) {
@@ -71,7 +72,7 @@ module.exports = class Sender {
       body: JSON.stringify(this.payload)
     };
 
-    return new Promise((resolve, reject) => {
+    return new BB.Promise((resolve, reject) => {
       requestFunction(options, (error, response, body) => {
         var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
         if (error || !is_valid) {

@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "async": "^1.5.0",
+    "bluebird": "^2.9.27",
     "lodash.merge": "^3.3.2",
     "lru-cache": "^2.7.0",
     "node-uuid": "^1.4.3"
