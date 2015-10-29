@@ -14,7 +14,7 @@
     "source-map-support": "^0.3.3"
   },
   "scripts": {
-    "test": "gulp watch:test",
+    "test": "gulp test && gulp lint",
     "deploy": "./node_modules/.bin/npm-deploy"
   },
   "repository": {
