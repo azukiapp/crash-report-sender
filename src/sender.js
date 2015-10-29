@@ -62,6 +62,8 @@ module.exports = class Sender {
   }
 
   _send(requestFunction, postUri) {
+    var payload = this.payload;
+
     var options = {
       method: 'post',
       url: postUri,
@@ -69,7 +71,7 @@ module.exports = class Sender {
         'User-Agent': 'azk'
       },
       json: true,
-      body: JSON.stringify(this.payload)
+      body: JSON.stringify(payload)
     };
 
     return new BB.Promise((resolve, reject) => {
@@ -80,6 +82,7 @@ module.exports = class Sender {
             error: error,
             body: body,
             response: response,
+            payload: payload,
             options: options
           });
         } else {
@@ -87,6 +90,7 @@ module.exports = class Sender {
             error: null,
             body: body,
             response: response,
+            payload: payload,
             options: options
           });
         }
