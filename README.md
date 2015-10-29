@@ -15,7 +15,6 @@ npm install request --save
 
 ```js
 var bugSender = require('bug-report-sender');
-var request = require('request');
 var libs = {request: request};
 
 var error_to_send = new Error('THIS IS AN ERROR');
@@ -26,7 +25,7 @@ var options = {
     extra1: 'EXTRA VALUE 1',
     extra2: 'EXTRA VALUE 2'
   },
-  libs: {requestLib: request},
+  libs: {requestFunction: require('request')},
   url: 'SOME_URL',
 };
 
