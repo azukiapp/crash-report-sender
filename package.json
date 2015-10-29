@@ -1,6 +1,6 @@
 {
   "name": "bug-report-sender",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "bug report sender",
   "main": "index.js",
   "dependencies": {
