@@ -78,11 +78,15 @@ module.exports = class Sender {
         if (error || !is_valid) {
           return reject({
             error: error,
+            body: body,
+            response: response,
             options: options
           });
         } else {
           return resolve({
+            error: null,
             body: body,
+            response: response,
             options: options
           });
         }

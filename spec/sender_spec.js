@@ -43,7 +43,7 @@ describe('Sender:', function() {
 
     return sender.send(opts)
     .then(function(result) {
-      h.expect(result).to.eql('{"result": "OK"}');
+      h.expect(result.body).to.eql('{"result": "OK"}');
     });
   });
 
