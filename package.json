@@ -4,13 +4,15 @@
   "description": "bug report sender",
   "main": "index.js",
   "dependencies": {
-    "gulp": "^3.9.0",
-    "azk-dev": "^0.1.0",
-    "node-uuid": "^1.4.3",
+    "async": "^1.5.0",
     "lodash.merge": "^3.3.2",
-    "babel-runtime": "^5.8.29"
+    "lru-cache": "^2.7.0",
+    "node-uuid": "^1.4.3"
   },
   "devDependencies": {
+    "azk-dev": "^0.1.0",
+    "gulp": "^3.9.0",
+    "babel-runtime": "^5.8.29",
     "source-map-support": "^0.3.3"
   },
   "scripts": {
