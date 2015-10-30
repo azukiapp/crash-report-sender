@@ -78,20 +78,26 @@ module.exports = class Sender {
       requestFunction(options, (error, response, body) => {
         var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
         if (error || !is_valid) {
-          return reject({
-            error: error,
-            body: body,
-            response: response,
-            payload: payload,
-            options: options
-          });
+
+          // there is no error, lets create one
+          if (!error) {
+            var error_message = '_send error';
+            if (body && body.code && body.message) {
+              error_message = `[${body.code}] ${body.message}`;
+            }
+            error = new Error(error_message);
+          }
+
+          // include some useful stuf on error
+          error.body = body;
+          error.requestOptions = options;
+          error.payload = payload;
+
+          return reject(error);
         } else {
           return resolve({
-            error: null,
             body: body,
-            response: response,
-            payload: payload,
-            options: options
+            payload: payload
           });
         }
       });
