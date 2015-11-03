@@ -1,5 +1,6 @@
 import h from './spec_helper';
 import Sender from '../src/sender';
+// import fs from 'fs';
 
 describe('Sender:', function() {
 
@@ -37,11 +38,10 @@ describe('Sender:', function() {
         extra1: 'EXTRA VALUE 1',
         extra2: 'EXTRA VALUE 2'
       },
-      libs: {requestFunction: fakeRequestLib},
       url: 'SOME_URL',
     };
 
-    return sender.send(opts)
+    return sender.send(opts, fakeRequestLib)
     .then(function(result) {
       h.expect(result.body).to.eql('{"result": "OK"}');
       h.expect(result.payload.environment).to.eql('development');
@@ -67,11 +67,10 @@ describe('Sender:', function() {
         extra1: 'EXTRA VALUE 1',
         extra2: 'EXTRA VALUE 2'
       },
-      libs: {requestFunction: fakeRequestLib},
       url: 'SOME_URL',
     };
 
-    return sender.send(opts)
+    return sender.send(opts, fakeRequestLib)
     .then(function() {
       throw new Error('SHOULD GET AN ERROR');
     })
@@ -102,11 +101,10 @@ describe('Sender:', function() {
         extra1: 'EXTRA VALUE 1',
         extra2: 'EXTRA VALUE 2'
       },
-      libs: {requestFunction: fakeRequestLib},
       url: 'SOME_URL',
     };
 
-    return sender.send(opts)
+    return sender.send(opts, fakeRequestLib)
     .then(function() {
       throw new Error('SHOULD GET AN ERROR');
     })
@@ -118,4 +116,32 @@ describe('Sender:', function() {
       h.expect(error_result.payload.extra1).to.eql('EXTRA VALUE 1');
     });
   });
+
+  it("should send in background", function() {
+    var sender = new Sender();
+    var error_to_send = new Error('My Exception');
+
+    var opts = {
+      err: error_to_send,
+      extra_values: {
+        extra1: 'EXTRA VALUE 1',
+        extra2: 'EXTRA VALUE 2'
+      },
+      url: 'SOME_URL',
+      background_send: true,
+      enable_tmp_file_debug: true
+    };
+
+    return sender.send(opts)
+    .then(function(result) {
+      h.expect(result).to.eql(0);
+
+      // TODO: need to check several times waiting to be created
+      // var content = fs.readFileSync('/tmp/bug-report-sender.log', 'utf8');
+      // var content_json = JSON.parse(content);
+      // h.expect(content_json.requestOptions).to.not.undefined;
+      // h.expect(content_json.payload).to.not.undefined;
+    });
+  });
+
 });

@@ -8,7 +8,8 @@
     "bluebird": "^2.9.27",
     "lodash.merge": "^3.3.2",
     "lru-cache": "^2.7.0",
-    "node-uuid": "^1.4.3"
+    "node-uuid": "^1.4.3",
+    "request": "^2.65.0"
   },
   "devDependencies": {
     "azk-dev": "^0.1.0",

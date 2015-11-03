@@ -3,6 +3,8 @@ import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import os from 'os';
 import BB from 'bluebird';
+import { spawn } from 'child_process';
+import path from 'path';
 
 module.exports = class Sender {
   constructor(opt) {
@@ -61,21 +63,27 @@ module.exports = class Sender {
     });
   }
 
-  _send(requestFunction, postUri) {
-    var payload = this.payload;
-
-    var options = {
+  _getRequestOptions(postUri) {
+    var request_opts = {
       method: 'post',
       url: postUri,
       headers: {
         'User-Agent': 'azk'
       },
       json: true,
-      body: JSON.stringify(payload)
+      body: JSON.stringify(this.payload)
     };
 
+    return {
+      request_opts: request_opts,
+      payload: this.payload,
+    };
+  }
+
+  _send(opts, requestFunction) {
+    var request = requestFunction || require('request');
     return new BB.Promise((resolve, reject) => {
-      requestFunction(options, (error, response, body) => {
+      request(opts.request_opts, (error, response, body) => {
         var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
         if (error || !is_valid) {
 
@@ -90,24 +98,58 @@ module.exports = class Sender {
 
           // include some useful stuf on error
           error.body = body;
-          error.requestOptions = options;
-          error.payload = payload;
+          error.requestOptions = opts.request_opts;
+          error.payload = opts.payload;
 
           return reject(error);
         } else {
           return resolve({
             body: body,
-            payload: payload
+            payload: opts.payload
           });
         }
       });
     });
   }
 
-  send(opts) {
-    var requestFunction = opts.libs.requestFunction || require('request');
+  _sendInBackground(request_options, enable_tmp_file_debug = null) {
+    return new BB.Promise((resolve) => {
+
+      var child = spawn('node', [path.join(__dirname, 'background-push.js')], {
+        detached: true,
+        stdio   : [null, null, null, 'pipe'],
+      });
+
+      if (enable_tmp_file_debug) {
+        request_options.enable_tmp_file_debug = true;
+      }
+
+      // Send configs to child
+      var pipe = child.stdio[3];
+      var buff = Buffer(JSON.stringify(request_options));
+      pipe.write(buff);
+      child.unref();
+
+      resolve(0);
+    });
+  }
+
+  send(opts, requestFunction = null) {
+    // parse error
     return this._prepare(opts.err, opts.extra_values)
-    .then(() => { return this._send(requestFunction, opts.url); });
+    .then(() => {
+      // get request options
+      var request_options = this._getRequestOptions(opts.url);
+
+      if (opts.background_send) {
+        // send in background
+        return this._sendInBackground(request_options, opts.enable_tmp_file_debug);
+      } else {
+        // send and wait
+        return this._send(request_options, requestFunction);
+      }
+
+    });
   }
 
 };
