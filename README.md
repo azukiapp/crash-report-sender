@@ -1,5 +1,7 @@
 # bug-report-sender
 
+[![Build Status](https://travis-ci.org/azukiapp/bug-report-sender.svg)](https://travis-ci.org/azukiapp/bug-report-sender)
+
 send bugs to be analysed
 
 #### install
