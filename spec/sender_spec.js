@@ -142,9 +142,9 @@ describe('Sender:', function() {
 
     var LOG_ERROR_PATH = '/tmp/bug-report-sender.log';
 
-    return fsAsync.stat(LOG_ERROR_PATH)
-    .then((file_stat) => {
-      if (file_stat.isFile()) {
+    return fsAsync.exists(LOG_ERROR_PATH)
+    .then((exists) => {
+      if (exists) {
         return fsAsync.remove(LOG_ERROR_PATH);
       }
     })
