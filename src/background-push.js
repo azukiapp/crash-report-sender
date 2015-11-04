@@ -1,28 +1,27 @@
 import net from 'net';
-import fs from 'fs';
+import Sender from './sender';
+
+require('source-map-support').install();
+
 var pipe = new net.Socket({ fd: 3 });
+var sender = new Sender();
 
 pipe.on('data', function (buf) {
   var data = JSON.parse(buf.toString('utf8'));
-
-  var Sender = require('./sender');
-  var sender = new Sender();
-
   sender._send(data)
-  .then((result) => {
+  .then(() => {
     pipe.end();
-    if (data.enable_tmp_file_debug) {
-      result.isError = false;
-      fs.writeFileSync('/tmp/bug-report-sender.log', JSON.stringify(result, ' ', 2), 'utf8');
-    }
-    process.exit(0);
+    // wait one second to log save file
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
   })
-  .catch((err) => {
-    if (data.enable_tmp_file_debug) {
-      err.isError = true;
-      fs.writeFileSync('/tmp/bug-report-sender.log', JSON.stringify(err, ' ', 2), 'utf8');
-    }
-    process.exit(1);
+  .catch(() => {
+    pipe.end();
+    // wait one second to log save file
+    setTimeout(() => {
+      process.exit(1);
+    }, 1000);
   });
 
 });

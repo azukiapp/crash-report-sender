@@ -1,4 +1,5 @@
 import { parseException } from './stack-trace-parser';
+import Logger from './logger';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import os from 'os';
@@ -7,7 +8,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 module.exports = class Sender {
-  constructor(opt) {
+  constructor(opt, logger_opts) {
     this.payload = merge({}, {
       environment: 'development',
       level: 'error',
@@ -21,6 +22,7 @@ module.exports = class Sender {
       }
     },
     opt);
+    this.logger = new Logger(logger_opts);
   }
 
   _genUuid() {
@@ -34,6 +36,7 @@ module.exports = class Sender {
       parseException(err, (err, parse_result) => {
 
         if (err) {
+          this.logger.error(['_prepare', 'parseException()'], err);
           return reject(err);
         }
 
@@ -88,41 +91,45 @@ module.exports = class Sender {
         if (error || !is_valid) {
 
           // there is no error, lets create one
-          if (!error) {
-            var error_message = '_send error';
-            if (body && body.code && body.message) {
-              error_message = `[${body.code}] ${body.message}`;
-            }
+          if (!error && body && body.code && body.message) {
+            let error_message = `[${body.code}] ${body.message}`;
+
+            // var options_passed = {
+            //   body: body,
+            //   requestOptions: opts.request_opts,
+            //   payload: opts.payload,
+            // };
+            // error_message = error_message + ` options: ${JSON.stringify(options_passed)}`;
+
             error = new Error(error_message);
+            error.body = body;
+            error.requestOptions = opts.request_opts;
+            error.payload = opts.payload;
           }
 
           // include some useful stuf on error
-          error.body = body;
-          error.requestOptions = opts.request_opts;
-          error.payload = opts.payload;
+          this.logger.error(['_send', 'request'], error);
 
           return reject(error);
         } else {
-          return resolve({
+          var result = {
             body: body,
             payload: opts.payload
-          });
+          };
+          this.logger.log(['_send', 'request'], result);
+          return resolve(result);
         }
       });
     });
   }
 
-  _sendInBackground(request_options, enable_tmp_file_debug = null) {
+  _sendInBackground(request_options) {
     return new BB.Promise((resolve) => {
 
       var child = spawn('node', [path.join(__dirname, 'background-push.js')], {
         detached: true,
         stdio   : [null, null, null, 'pipe'],
       });
-
-      if (enable_tmp_file_debug) {
-        request_options.enable_tmp_file_debug = true;
-      }
 
       // Send configs to child
       var pipe = child.stdio[3];
@@ -140,10 +147,9 @@ module.exports = class Sender {
     .then(() => {
       // get request options
       var request_options = this._getRequestOptions(opts.url);
-
       if (opts.background_send) {
         // send in background
-        return this._sendInBackground(request_options, opts.enable_tmp_file_debug);
+        return this._sendInBackground(request_options);
       } else {
         // send and wait
         return this._send(request_options, requestFunction);

@@ -1,6 +1,7 @@
 import h from './spec_helper';
 import Sender from '../src/sender';
-// import fs from 'fs';
+import fsAsync from 'file-async';
+import BB from 'bluebird';
 
 describe('Sender:', function() {
 
@@ -50,7 +51,7 @@ describe('Sender:', function() {
   });
 
   it("should error when sending error and get 404", function() {
-    var sender = new Sender();
+    var sender = new Sender({}, { level: 'critical' });
     var error_to_send = new Error('My Exception');
 
     var fakeRequestLib = function(options, callback) {
@@ -84,7 +85,7 @@ describe('Sender:', function() {
   });
 
   it("should error when sending error and get error", function() {
-    var sender = new Sender();
+    var sender = new Sender({}, { level: 'critical' });
     var error_to_send = new Error('My Exception');
 
     var fakeRequestLib = function(options, callback) {
@@ -110,38 +111,59 @@ describe('Sender:', function() {
     })
     .catch(function(error_result) {
       h.expect(error_result.message).to.eql('UNUSUAL ERROR');
-      h.expect(error_result.body).to.be.null;
-      h.expect(error_result.requestOptions.method).to.eql('post');
-      h.expect(error_result.payload.environment).to.eql('development');
-      h.expect(error_result.payload.extra1).to.eql('EXTRA VALUE 1');
     });
   });
 
   it("should send in background", function() {
     var sender = new Sender();
-    var error_to_send = new Error('My Exception');
 
-    var opts = {
-      err: error_to_send,
-      extra_values: {
-        extra1: 'EXTRA VALUE 1',
-        extra2: 'EXTRA VALUE 2'
+    var json = {
+      request_opts: {
+        method: 'post',
+        url: 'SOME_WRONG_URL',
+        headers: { 'User-Agent': 'azk' },
+        json: true,
+        body: '{}'
       },
-      url: 'SOME_URL',
-      background_send: true,
-      enable_tmp_file_debug: true
+      payload: {
+        environment: 'development',
+        level: 'error',
+        language: 'javascript',
+        framework: 'node-js',
+        platform: 'linux',
+        server: { host: 'julio-P67A-UD3-B3', argv: '', pid: 4040 },
+        extra1: 'EXTRA VALUE 1',
+        extra2: 'EXTRA VALUE 2',
+        timestamp: 1446649932,
+        uuid: 'e1284c94416748c5b8001c69b7054108',
+        body: { trace: {} }
+      }
     };
 
-    return sender.send(opts)
-    .then(function(result) {
-      h.expect(result).to.eql(0);
+    var LOG_ERROR_PATH = '/tmp/bug-report-sender.log';
 
-      // TODO: need to check several times waiting to be created
-      // var content = fs.readFileSync('/tmp/bug-report-sender.log', 'utf8');
-      // var content_json = JSON.parse(content);
-      // h.expect(content_json.requestOptions).to.not.undefined;
-      // h.expect(content_json.payload).to.not.undefined;
+    return fsAsync.stat(LOG_ERROR_PATH)
+    .then((file_stat) => {
+      if (file_stat.isFile()) {
+        return fsAsync.remove(LOG_ERROR_PATH);
+      }
+    })
+    .then(() => {
+      return sender._sendInBackground(json);
+    })
+    .then((result) => {
+      h.expect(result).to.eql(0);
+    })
+    .then(() => {
+      return BB.delay(1000);
+    })
+    .then(() => {
+      return fsAsync.readFile(LOG_ERROR_PATH, 'utf-8');
+    })
+    .then((content) => {
+      h.expect(content).to.contain('Invalid URI');
     });
+
   });
 
 });
