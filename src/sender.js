@@ -89,7 +89,6 @@ module.exports = class Sender {
       request(opts.request_opts, (error, response, body) => {
         var is_valid = response && (response.statusCode === 200 || response.statusCode === 201);
         if (error || !is_valid) {
-
           // there is no error, lets create one
           if (!error && body && body.code && body.message) {
             let error_message = `[${body.code}] ${body.message}`;
@@ -101,6 +100,7 @@ module.exports = class Sender {
           }
 
           // include some useful stuf on error
+          this.logger.error(['_send', 'request'], 'status code: ' + response.statusCode, error);
           this.logger.error(['_send', 'request'], error);
 
           return reject(error);
