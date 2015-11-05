@@ -52,3 +52,9 @@ e.g.:
 ```sh
 ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
 ```
+
+#### Publish
+
+```
+npm run deploy <version>
+```
