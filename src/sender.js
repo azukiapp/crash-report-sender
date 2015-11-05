@@ -94,13 +94,6 @@ module.exports = class Sender {
           if (!error && body && body.code && body.message) {
             let error_message = `[${body.code}] ${body.message}`;
 
-            // var options_passed = {
-            //   body: body,
-            //   requestOptions: opts.request_opts,
-            //   payload: opts.payload,
-            // };
-            // error_message = error_message + ` options: ${JSON.stringify(options_passed)}`;
-
             error = new Error(error_message);
             error.body = body;
             error.requestOptions = opts.request_opts;
