@@ -38,8 +38,17 @@ bugSender.send(options)
 
 ```
 
-#### test/lint and watch
+#### Test
 
 ```sh
-npm test
+gulp
+```
+
+#### Test (with integration test)
+
+> to run integration test you need set `ENTRYPOINT` env
+
+e.g.:
+```sh
+ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
 ```
