@@ -74,7 +74,7 @@ module.exports = class Sender {
         'User-Agent': 'azk'
       },
       json: true,
-      body: JSON.stringify(this.payload)
+      body: JSON.stringify({ report: this.payload })
     };
 
     return {
