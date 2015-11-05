@@ -11,9 +11,6 @@ describe('parseException:', function() {
     var exc = new Error('my Exception');
     parseException(exc, function(err, result) {
       h.expect(result).to.not.be.undefined;
-      //  console.log('\n>>---------\n result:\n',
-      //  require('util').inspect(result,
-      //  { showHidden: false, depth: null, colors: true }), '\n>>---------\n');
     });
   });
 

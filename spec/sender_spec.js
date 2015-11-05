@@ -15,10 +15,10 @@ describe('Sender:', function() {
     var err = new Error('My Exception');
 
     return sender._prepare(err, {extra: 'EXTRA VALUES'})
-    .then(function(result) {
-      h.expect(result.body.trace.frames).to.not.be.undefined;
-      h.expect(result.body.trace.exception).to.not.be.undefined;
-    });
+      .then(function(result) {
+        h.expect(result.body.trace.frames).to.not.be.undefined;
+        h.expect(result.body.trace.exception).to.not.be.undefined;
+      });
   });
 
   it("should send error", function() {
@@ -43,11 +43,9 @@ describe('Sender:', function() {
     };
 
     return sender.send(opts, fakeRequestLib)
-    .then(function(result) {
-      h.expect(result.body).to.eql('{"result": "OK"}');
-      h.expect(result.payload.environment).to.eql('development');
-      h.expect(result.payload.extra1).to.eql('EXTRA VALUE 1');
-    });
+      .then(function(result) {
+        h.expect(result).to.eql('{"result": "OK"}');
+      });
   });
 
   it("should error when sending error and get 404", function() {
@@ -72,16 +70,16 @@ describe('Sender:', function() {
     };
 
     return sender.send(opts, fakeRequestLib)
-    .then(function() {
-      throw new Error('SHOULD GET AN ERROR');
-    })
-    .catch(function(error_result) {
-      h.expect(error_result.message).to.eql('[404] Not found');
-      h.expect(error_result.body).to.eql({ message: 'Not found', code: 404 });
-      h.expect(error_result.requestOptions.method).to.eql('post');
-      h.expect(error_result.payload.environment).to.eql('development');
-      h.expect(error_result.payload.extra1).to.eql('EXTRA VALUE 1');
-    });
+      .then(function() {
+        throw new Error('SHOULD GET AN ERROR');
+      })
+      .catch(function(error_result) {
+        h.expect(error_result.message).to.eql('[404] Not found');
+        h.expect(error_result.response).to.eql({ message: 'Not found', code: 404 });
+        h.expect(error_result.requestOptions.method).to.eql('post');
+        h.expect(error_result.payload.environment).to.eql('development');
+        h.expect(error_result.payload.extra1).to.eql('EXTRA VALUE 1');
+      });
   });
 
   it("should error when sending error and get error", function() {
@@ -106,12 +104,12 @@ describe('Sender:', function() {
     };
 
     return sender.send(opts, fakeRequestLib)
-    .then(function() {
-      throw new Error('SHOULD GET AN ERROR');
-    })
-    .catch(function(error_result) {
-      h.expect(error_result.message).to.eql('UNUSUAL ERROR');
-    });
+      .then(function() {
+        throw new Error('SHOULD GET AN ERROR');
+      })
+      .catch(function(error_result) {
+        h.expect(error_result.message).to.eql('UNUSUAL ERROR');
+      });
   });
 
   it("should send in background", function() {
@@ -143,36 +141,43 @@ describe('Sender:', function() {
     var LOG_ERROR_PATH = '/tmp/bug-report-sender.log';
 
     return fsAsync.exists(LOG_ERROR_PATH)
-    .then((exists) => {
-      if (exists) {
-        return fsAsync.remove(LOG_ERROR_PATH);
-      }
-    })
-    .then(() => {
-      return sender._sendInBackground(json);
-    })
-    .then((result) => {
-      h.expect(result).to.eql(0);
-    })
-    .then(() => {
-      return BB.delay(1000);
-    })
-    .then(() => {
-      return fsAsync.readFile(LOG_ERROR_PATH, 'utf-8');
-    })
-    .then((content) => {
-      h.expect(content).to.contain('Invalid URI');
-    });
-
+      .then((exists) => {
+        if (exists) {
+          return fsAsync.remove(LOG_ERROR_PATH);
+        }
+      })
+      .then(() => {
+        return sender._sendInBackground(json);
+      })
+      .then((result) => {
+        h.expect(result).to.eql(0);
+      })
+      .then(() => {
+        return BB.delay(1000);
+      })
+      .then(() => {
+        return fsAsync.readFile(LOG_ERROR_PATH, 'utf-8');
+      })
+      .then((content) => {
+        h.expect(content).to.contain('Invalid URI');
+      });
   });
 
   it("should send real data", function() {
+    // To run this test need TOKEN env
+    // eg:
+    //
+    //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
+    var entrypoint = process.env.ENTRYPOINT;
+    if (!entrypoint) { return; }
+
+    this.timeout(20000);
     var sender = new Sender();
 
     var json = {
       request_opts: {
         method: 'post',
-        url: 'http://force-stage.azk.io/report/A2ObXDzlG6fOJC803qBzDjde2YxygZY4',
+        url: entrypoint,
         headers: {
           'content-type': 'application/json',
           'user-agent'  : 'bug-report-sender',
@@ -202,11 +207,8 @@ describe('Sender:', function() {
     };
 
     return sender._send(json)
-    .then((result) => {
-      /**/console.log('\n>>---------\n result:\n', result, '\n>>---------\n');/*-debug-*/
-    })
-    .catch((err) => {
-      /**/console.log('\n>>---------\n err:\n', err, '\n>>---------\n');/*-debug-*/
-    });
+      .then((result) => {
+        h.expect(result).has.property('status', 'ok');
+      });
   });
 });

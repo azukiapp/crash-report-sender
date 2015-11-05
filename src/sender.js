@@ -108,7 +108,7 @@ module.exports = class Sender {
           }
 
           // include some useful stuf on error
-          this.logger.error(['_send', 'request'], 'status code: ' + response.statusCode, error);
+          this.logger.error(['_send', 'request'], 'status code: ' + (response && response.statusCode), error);
           this.logger.error(['_send', 'request'], error);
 
           return reject(error);
