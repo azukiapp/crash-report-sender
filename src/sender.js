@@ -66,20 +66,28 @@ module.exports = class Sender {
     });
   }
 
-  _getRequestOptions(postUri) {
+  _getRequestOptions(options = {}) {
+    var jsonWrapper = options.jsonWrapper;
+
+    if (typeof jsonWrapper !== 'function') {
+      jsonWrapper = function(payload) { return payload; };
+    }
+
     var request_opts = {
-      method: 'post',
-      url: postUri,
-      headers: {
-        'User-Agent': 'azk'
+      json   : jsonWrapper(this.payload),
+      method : options.method  || 'post',
+      headers: options.headers || {
+        'content-type': 'application/json',
+        'user-agent'  : 'bug-report-sender',
+        'origin'      : 'bug-report-sender',
+        'accept'      : '*/*',
+        'connection'  : 'keep-alive',
       },
-      json: true,
-      body: { report: this.payload }
     };
 
     return {
       request_opts: request_opts,
-      payload: this.payload,
+      payload     : this.payload,
     };
   }
 
@@ -94,9 +102,9 @@ module.exports = class Sender {
             let error_message = `[${body.code}] ${body.message}`;
 
             error = new Error(error_message);
-            error.body = body;
+            error.response       = body;
+            error.payload        = opts.payload;
             error.requestOptions = opts.request_opts;
-            error.payload = opts.payload;
           }
 
           // include some useful stuf on error
@@ -106,11 +114,11 @@ module.exports = class Sender {
           return reject(error);
         } else {
           var result = {
-            body: body,
+            reponse: body,
             payload: opts.payload
           };
           this.logger.log(['_send', 'request'], result);
-          return resolve(result);
+          return resolve(body);
         }
       });
     });
@@ -139,7 +147,7 @@ module.exports = class Sender {
     return this._prepare(opts.err, opts.extra_values)
     .then(() => {
       // get request options
-      var request_options = this._getRequestOptions(opts.url);
+      var request_options = this._getRequestOptions(opts);
       if (opts.background_send) {
         // send in background
         return this._sendInBackground(request_options);
@@ -147,8 +155,6 @@ module.exports = class Sender {
         // send and wait
         return this._send(request_options, requestFunction);
       }
-
     });
   }
-
 };
