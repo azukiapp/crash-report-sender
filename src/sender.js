@@ -67,6 +67,10 @@ module.exports = class Sender {
   }
 
   _getRequestOptions(options = {}) {
+    if (typeof options.url === 'undefined') {
+      throw new Error('undefined is not a valid uri or options object.');
+    }
+
     var jsonWrapper = options.jsonWrapper;
 
     if (typeof jsonWrapper !== 'function') {
@@ -75,6 +79,7 @@ module.exports = class Sender {
 
     var request_opts = {
       json   : jsonWrapper(this.payload),
+      url    : options.url,
       method : options.method  || 'post',
       headers: options.headers || {
         'content-type': 'application/json',
