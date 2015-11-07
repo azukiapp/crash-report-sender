@@ -139,6 +139,7 @@ module.exports = class Sender {
 
       // Send configs to child
       var pipe = child.stdio[3];
+      /**/console.log('\n>>---------\n request_options:\n', request_options, '\n>>---------\n');/*-debug-*/
       var buff = Buffer(JSON.stringify(request_options));
       pipe.write(buff);
       child.unref();

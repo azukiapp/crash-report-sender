@@ -169,7 +169,11 @@ describe('Sender:', function() {
     //
     //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
     var entrypoint = process.env.ENTRYPOINT;
-    if (!entrypoint) { return; }
+    if (!entrypoint) {
+      console.log(`> To run this test need TOKEN env.
+> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test --grep 'should send real data'`);
+      return;
+    }
 
     this.timeout(20000);
     var sender = new Sender();
@@ -209,6 +213,32 @@ describe('Sender:', function() {
     return sender._send(json)
       .then((result) => {
         h.expect(result).has.property('status', 'ok');
+      });
+  });
+
+  it("should send error to real entrypoint", function() {
+    var sender = new Sender();
+    var error_to_send = new Error('My Exception');
+
+    var entrypoint = process.env.ENTRYPOINT;
+    if (!entrypoint) {
+      console.log(`> To run this test need TOKEN env.
+> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test`);
+      return;
+    }
+
+    var opts = {
+      err: error_to_send,
+      extra_values: {
+        extra1: 'EXTRA VALUE 1',
+        extra2: 'EXTRA VALUE 2'
+      },
+      url: entrypoint,
+    };
+
+    return sender.send(opts)
+      .then(function(result) {
+        h.expect(result).to.eql('{"result": "OK"}');
       });
   });
 });
