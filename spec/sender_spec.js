@@ -163,14 +163,15 @@ describe('Sender:', function() {
       });
   });
 
+  // ---------------
+
   describe('real tests:', function() {
 
     it("should send real data", function() {
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log(`> To run this test need TOKEN env.
-  > ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test --grep 'should send real data'`);
+        console.log('> To run this test need TOKEN env. \n> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
         return;
       }
 
@@ -221,8 +222,7 @@ describe('Sender:', function() {
 
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log(`> To run this test need TOKEN env.
-> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test`);
+        console.log('> To run this test need TOKEN env. \nex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
         return;
       }
 
@@ -243,14 +243,13 @@ describe('Sender:', function() {
     });
 
     //FIXME: should create the log file
-    it.skip("should success when send in background", function() {
+    it("should success when send in background", function() {
       var sender = new Sender();
 
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log(`> To run this test need TOKEN env.
-  > ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test --grep 'should send real data'`);
+        console.log('> To run this test need TOKEN env. \n> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
         return;
       }
 
@@ -304,10 +303,10 @@ describe('Sender:', function() {
           return BB.delay(1000);
         })
         .then(() => {
-          return fsAsync.readFile(LOG_ERROR_PATH, 'utf-8');
+          return fsAsync.exists(LOG_ERROR_PATH);
         })
-        .then((content) => {
-          h.expect(content).to.contain('Invalid URI');
+        .then((exists) => {
+          h.expect(exists).to.eql(false);
         });
     });
   });
