@@ -83,8 +83,8 @@ module.exports = class Sender {
       method : options.method  || 'post',
       headers: options.headers || {
         'content-type': 'application/json',
-        'user-agent'  : 'bug-report-sender',
-        'origin'      : 'bug-report-sender',
+        'user-agent'  : 'crash-report-sender',
+        'origin'      : 'crash-report-sender',
         'accept'      : '*/*',
         'connection'  : 'keep-alive',
       },

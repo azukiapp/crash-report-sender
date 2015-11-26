@@ -1,13 +1,13 @@
-# bug-report-sender
+# crash-report-sender
 
-[![Build Status](https://travis-ci.org/azukiapp/bug-report-sender.svg)](https://travis-ci.org/azukiapp/bug-report-sender)
+[![Build Status](https://travis-ci.org/azukiapp/crash-report-sender.svg)](https://travis-ci.org/azukiapp/crash-report-sender)
 
-send bugs to be analysed
+send crashs to be analysed
 
 #### install
 
 ```sh
-npm install bug-report-sender --save
+npm install crash-report-sender --save
 
 # dependency to inject
 npm install request --save
@@ -16,7 +16,8 @@ npm install request --save
 #### usage
 
 ```js
-var bugSender = require('bug-report-sender');
+var CrashSender = require('crash-report-sender');
+var crashSender = new CrashSender();
 var libs = {request: request};
 
 var error_to_send = new Error('THIS IS AN ERROR');
@@ -31,7 +32,7 @@ var options = {
   url: 'SOME_URL',
 };
 
-bugSender.send(options)
+crashSender.send(options)
 .then(function(result) {
   // OK
 });

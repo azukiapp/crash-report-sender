@@ -138,7 +138,7 @@ describe('Sender:', function() {
       }
     };
 
-    var LOG_ERROR_PATH = '/tmp/bug-report-sender.log';
+    var LOG_ERROR_PATH = '/tmp/crash-report-sender.log';
 
     return fsAsync.exists(LOG_ERROR_PATH)
       .then((exists) => {
@@ -171,7 +171,9 @@ describe('Sender:', function() {
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log('> To run this test need TOKEN env. \n> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
+        console.log(['> To run this test need TOKEN env. \n',
+          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
+          ].join(''));
         return;
       }
 
@@ -184,8 +186,8 @@ describe('Sender:', function() {
           url: entrypoint,
           headers: {
             'content-type': 'application/json',
-            'user-agent'  : 'bug-report-sender',
-            "origin"      : "bug-report-sender",
+            'user-agent'  : 'crash-report-sender',
+            "origin"      : "crash-report-sender",
             "accept"      : "*/*",
             "connection"  : "keep-alive",
           },
@@ -222,7 +224,9 @@ describe('Sender:', function() {
 
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log('> To run this test need TOKEN env. \nex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
+        console.log(['> To run this test need TOKEN env. \n',
+          'ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
+          ].join(''));
         return;
       }
 
@@ -249,7 +253,9 @@ describe('Sender:', function() {
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
       var entrypoint = process.env.ENTRYPOINT;
       if (!entrypoint) {
-        console.log('> To run this test need TOKEN env. \n> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test');
+        console.log(['> To run this test need TOKEN env. \n',
+          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
+          ].join(''));
         return;
       }
 
@@ -259,8 +265,8 @@ describe('Sender:', function() {
           url: entrypoint,
           headers: {
             'content-type': 'application/json',
-            'user-agent'  : 'bug-report-sender',
-            "origin"      : "bug-report-sender",
+            'user-agent'  : 'crash-report-sender',
+            "origin"      : "crash-report-sender",
             "accept"      : "*/*",
             "connection"  : "keep-alive",
           },
@@ -285,7 +291,7 @@ describe('Sender:', function() {
         }
       };
 
-      var LOG_ERROR_PATH = '/tmp/bug-report-sender.log';
+      var LOG_ERROR_PATH = '/tmp/crash-report-sender.log';
 
       return fsAsync.exists(LOG_ERROR_PATH)
         .then((exists) => {

@@ -8,7 +8,7 @@ module.exports = class Logger {
       transports: [
         new (winston.transports.Console)(),
         new (winston.transports.File)({
-          filename: opts.filename || '/tmp/bug-report-sender.log',
+          filename: opts.filename || '/tmp/crash-report-sender.log',
           handleExceptions: true,
           colorize: true,
           prettyPrint: true,
@@ -16,7 +16,7 @@ module.exports = class Logger {
         })
       ]
     });
-    this.prefix = '[bug-report-sender] ';
+    this.prefix = '[crash-report-sender] ';
   }
 
   _parseWhere(whereStr) {
@@ -27,8 +27,8 @@ module.exports = class Logger {
     this.winston.log(this.prefix, this._parseWhere(where), str);
   }
 
-  debug(where, str) {
-    this.winston.debug(this.prefix, this._parseWhere(where), str);
+  decrash(where, str) {
+    this.winston.decrash(this.prefix, this._parseWhere(where), str);
   }
 
   error(where, err) {

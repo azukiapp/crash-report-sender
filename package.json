@@ -1,7 +1,7 @@
 {
-  "name": "bug-report-sender",
+  "name": "crash-report-sender",
   "version": "0.2.2",
-  "description": "bug report sender",
+  "description": "crash report sender",
   "main": "index.js",
   "dependencies": {
     "async": "^1.5.0",
@@ -25,17 +25,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/azukiapp/bug-report-sender.git"
+    "url": "git+https://github.com/azukiapp/crash-report-sender.git"
   },
   "keywords": [
     "azk",
-    "bug",
+    "crash",
     "report"
   ],
   "author": "saitodisse@gmail.com",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/azukiapp/bug-report-sender/issues"
+  "crashs": {
+    "url": "https://github.com/azukiapp/crash-report-sender/issues"
   },
-  "homepage": "https://github.com/azukiapp/bug-report-sender#readme"
+  "homepage": "https://github.com/azukiapp/crash-report-sender#readme"
 }
