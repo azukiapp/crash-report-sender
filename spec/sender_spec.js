@@ -165,7 +165,7 @@ describe('Sender:', function() {
 
   // ---------------
 
-  describe('real tests:', function() {
+  describe('real integration tests:', function() {
 
     it("should send real data", function() {
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
