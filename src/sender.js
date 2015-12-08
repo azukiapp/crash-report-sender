@@ -1,4 +1,4 @@
-import { parseException } from './stack-trace-parser';
+import { parser } from 'rollbar';
 import Logger from './logger';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
@@ -33,7 +33,7 @@ module.exports = class Sender {
 
   _prepare(err, extra_values) {
     return new BB.Promise((resolve, reject) => {
-      parseException(err, (err, parse_result) => {
+      parser.parseException(err, (err, parse_result) => {
 
         if (err) {
           this.logger.error(['_prepare', 'parseException()'], err);
