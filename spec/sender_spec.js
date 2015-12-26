@@ -2,16 +2,13 @@ import h from './spec_helper';
 import Sender from '../src/sender';
 import fsAsync from 'file-async';
 import BB from 'bluebird';
+import winston from 'winston';
 
 describe('Sender:', function() {
-
-  it("should Sender exists", function() {
-    var sender = new Sender();
-    h.expect(sender).to.not.be.undefined;
-  });
+  var logger = new (winston.Logger)();
 
   it("should parse an error", function() {
-    var sender = new Sender();
+    var sender = new Sender({}, { logger });
     var err = new Error('My Exception');
 
     return sender._prepare(err, {extra: 'EXTRA VALUES'})
@@ -22,7 +19,7 @@ describe('Sender:', function() {
   });
 
   it("should send error", function() {
-    var sender = new Sender();
+    var sender = new Sender({}, { logger });
     var error_to_send = new Error('My Exception');
 
     var fakeRequestLib = function(options, callback) {
@@ -113,7 +110,7 @@ describe('Sender:', function() {
   });
 
   it("should error when send in background", function() {
-    var sender = new Sender();
+    var sender = new Sender({}, { logger });
 
     var json = {
       request_opts: {
@@ -178,7 +175,7 @@ describe('Sender:', function() {
       }
 
       this.timeout(20000);
-      var sender = new Sender();
+      var sender = new Sender({}, { logger });
 
       var json = {
         request_opts: {
@@ -219,7 +216,7 @@ describe('Sender:', function() {
     });
 
     it("should send error to real entrypoint", function() {
-      var sender = new Sender();
+      var sender = new Sender({}, { logger });
       var error_to_send = new Error('My Exception');
 
       var entrypoint = process.env.ENTRYPOINT;
@@ -248,7 +245,7 @@ describe('Sender:', function() {
 
     //FIXME: should create the log file
     it("should success when send in background", function() {
-      var sender = new Sender();
+      var sender = new Sender({}, { logger });
 
       //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
       var entrypoint = process.env.ENTRYPOINT;
@@ -316,5 +313,4 @@ describe('Sender:', function() {
         });
     });
   });
-
 });

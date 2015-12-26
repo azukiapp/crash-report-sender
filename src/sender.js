@@ -1,5 +1,5 @@
 import { parser } from 'rollbar';
-import Logger from './logger';
+import LoggerWraper from './logger';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import os from 'os';
@@ -7,7 +7,7 @@ import BB from 'bluebird';
 import { spawn } from 'child_process';
 import path from 'path';
 
-module.exports = class Sender {
+export default class Sender {
   constructor(opt, logger_opts) {
     this.payload = merge({}, {
       environment: 'development',
@@ -20,9 +20,8 @@ module.exports = class Sender {
         argv: process.argv.concat(),
         pid: process.pid
       }
-    },
-    opt);
-    this.logger = new Logger(logger_opts);
+    }, opt);
+    this.logger = new LoggerWraper(logger_opts);
   }
 
   _genUuid() {
@@ -122,10 +121,10 @@ module.exports = class Sender {
             reponse: body,
             payload: opts.payload
           };
-          this.logger.log(['_send', 'request'], result);
+          this.logger.log('info', ['_send', 'request'], result);
           return resolve(body);
         }
-      });
+      }).setMaxListeners(20);
     });
   }
 

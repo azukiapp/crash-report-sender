@@ -1,9 +1,29 @@
-import winston from 'winston';
-
-module.exports = class Logger {
-
+export default class LoggerWraper {
   constructor(opts = {}) {
-    this.winston = new (winston.Logger)({
+    if (typeof(opts.logger) === 'undefined') {
+      this.logger = this._defaultLogger(opts);
+    } else {
+      this.logger = opts.logger;
+    }
+    this.error_level = opts.error_level || 'error';
+    this.prefix = '[crash-report-sender] ';
+  }
+
+  log(level, where, str) {
+    this.logger.log(level, this.prefix, this._parseWhere(where), str);
+  }
+
+  error(where, str) {
+    this.log(this.error_level, where, str);
+  }
+
+  _parseWhere(whereStr) {
+    return '{ ' + whereStr.join(', ') + ' } -> ';
+  }
+
+  _defaultLogger(opts) {
+    let winston = require('winston');
+    return new (winston.Logger)({
       level: opts.level || 'info',
       transports: [
         new (winston.transports.Console)(),
@@ -16,23 +36,5 @@ module.exports = class Logger {
         })
       ]
     });
-    this.prefix = '[crash-report-sender] ';
   }
-
-  _parseWhere(whereStr) {
-    return '{ ' + whereStr.join(', ') + ' } -> ';
-  }
-
-  log(where, str) {
-    this.winston.log(this.prefix, this._parseWhere(where), str);
-  }
-
-  decrash(where, str) {
-    this.winston.decrash(this.prefix, this._parseWhere(where), str);
-  }
-
-  error(where, err) {
-    this.winston.error(this.prefix, this._parseWhere(where), err);
-  }
-
-};
+}
