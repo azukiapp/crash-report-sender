@@ -95,7 +95,7 @@ export default class Sender {
     };
   }
 
-  _send(opts, requestFunction) {
+  _send_now(opts, requestFunction = null) {
     var request = requestFunction || require('request');
     return new BB.Promise((resolve, reject) => {
       request(opts.request_opts, (error, response, body) => {
@@ -110,25 +110,20 @@ export default class Sender {
             error.payload        = opts.payload;
             error.requestOptions = opts.request_opts;
           }
-
-          // include some useful stuf on error
-          this.logger.error(['_send', 'request'], 'status code: ' + (response && response.statusCode), error);
-          this.logger.error(['_send', 'request'], error);
-
           return reject(error);
         } else {
           var result = {
             reponse: body,
             payload: opts.payload
           };
-          this.logger.log('info', ['_send', 'request'], result);
+          this.logger.log('info', ['_send_now', 'request'], 'report sendend, response: %j', result, {});
           return resolve(body);
         }
       }).setMaxListeners(20);
     });
   }
 
-  _sendInBackground(request_options) {
+  _send_in_background(request_options) {
     return new BB.Promise((resolve) => {
       // make sender options
       var data = {
@@ -137,7 +132,8 @@ export default class Sender {
           // Only log to file in background mode
           console: false,
           filename: this.logger.filename,
-          error_level: this.logger.error_level
+          error_level: this.logger.error_level,
+          level: this.logger.file_level,
         }
       };
 
@@ -164,10 +160,10 @@ export default class Sender {
       var request_options = this._getRequestOptions(opts);
       if (opts.background_send) {
         // send in background
-        return this._sendInBackground(request_options);
+        return this._send_in_background(request_options);
       } else {
         // send and wait
-        return this._send(request_options, requestFunction);
+        return this._send_now(request_options, requestFunction);
       }
     });
   }

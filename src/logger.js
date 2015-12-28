@@ -12,12 +12,12 @@ export default class LoggerWraper {
     this.prefix = '[crash-report-sender] ';
   }
 
-  log(level, where, str) {
-    this.logger.log(level, this.prefix, this._parseWhere(where), str);
+  log(level, where, msg, ...args) {
+    this.logger.log(level, `${this.prefix} ${this._parseWhere(where)} ${msg}`, ...args);
   }
 
-  error(where, str) {
-    this.log(this.error_level, where, str);
+  error(where, ...args) {
+    this.log(this.error_level, where, ...args);
   }
 
   /**
@@ -27,6 +27,13 @@ export default class LoggerWraper {
     let transport = this.logger.transports.file;
     if (transport) {
       return path.join(transport.dirname, transport.filename);
+    }
+  }
+
+  get file_level() {
+    let transport = this.logger.transports.file;
+    if (transport) {
+      return transport.level;
     }
   }
 
@@ -54,6 +61,7 @@ export default class LoggerWraper {
     // File log transport
     transports.push(new (winston.transports.File)({
       filename: opts.filename || '/tmp/crash-report-sender.log',
+      level: opts.level || 'error',
       handleExceptions: true,
       colorize: false,
       prettyPrint: true,
