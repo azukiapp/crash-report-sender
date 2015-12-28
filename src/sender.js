@@ -130,6 +130,16 @@ export default class Sender {
 
   _sendInBackground(request_options) {
     return new BB.Promise((resolve) => {
+      // make sender options
+      var data = {
+        data_send: request_options,
+        logger_opts: {
+          // Only log to file in background mode
+          console: false,
+          filename: this.logger.filename,
+          error_level: this.logger.error_level
+        }
+      };
 
       var child = spawn('node', [path.join(__dirname, 'background-push.js')], {
         detached: true,
@@ -138,7 +148,7 @@ export default class Sender {
 
       // Send configs to child
       var pipe = child.stdio[3];
-      var buff = Buffer(JSON.stringify(request_options));
+      var buff = Buffer(JSON.stringify(data));
       pipe.write(buff);
       child.unref();
 

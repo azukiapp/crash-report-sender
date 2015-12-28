@@ -1,11 +1,17 @@
 import h from './spec_helper';
 import Sender from '../src/sender';
+import Logger from '../src/logger';
 import fsAsync from 'file-async';
 import BB from 'bluebird';
 import winston from 'winston';
 
 describe('Sender:', function() {
-  var logger = new (winston.Logger)();
+  var logger = null;
+
+  before(() => {
+    var lg = new Logger({ console: false });
+    logger = lg.logger;
+  });
 
   it("should parse an error", function() {
     var sender = new Sender({}, { logger });
@@ -135,12 +141,12 @@ describe('Sender:', function() {
       }
     };
 
-    var LOG_ERROR_PATH = '/tmp/crash-report-sender.log';
+    let log_file = sender.logger.filename;
 
-    return fsAsync.exists(LOG_ERROR_PATH)
+    return fsAsync.exists(log_file)
       .then((exists) => {
         if (exists) {
-          return fsAsync.remove(LOG_ERROR_PATH);
+          return fsAsync.remove(log_file);
         }
       })
       .then(() => {
@@ -153,7 +159,7 @@ describe('Sender:', function() {
         return BB.delay(1000);
       })
       .then(() => {
-        return fsAsync.readFile(LOG_ERROR_PATH, 'utf-8');
+        return fsAsync.readFile(log_file, 'utf-8');
       })
       .then((content) => {
         h.expect(content).to.contain('Invalid URI');
@@ -163,21 +169,21 @@ describe('Sender:', function() {
   // ---------------
 
   describe('real integration tests:', function() {
+    let entrypoint = null;
+    before(() => {
+      entrypoint = process.env.ENTRYPOINT;
+      if (!entrypoint) {
+        throw new Error([
+          '> To run this test need TOKEN env. \n',
+          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
+        ].join(''));
+      }
+    });
 
     it("should send real data", function() {
-      //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
-      var entrypoint = process.env.ENTRYPOINT;
-      if (!entrypoint) {
-        console.log(['> To run this test need TOKEN env. \n',
-          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
-          ].join(''));
-        return;
-      }
-
       this.timeout(20000);
       var sender = new Sender({}, { logger });
-
-      var json = {
+      var json   = {
         request_opts: {
           method: 'post',
           url: entrypoint,
@@ -219,14 +225,6 @@ describe('Sender:', function() {
       var sender = new Sender({}, { logger });
       var error_to_send = new Error('My Exception');
 
-      var entrypoint = process.env.ENTRYPOINT;
-      if (!entrypoint) {
-        console.log(['> To run this test need TOKEN env. \n',
-          'ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
-          ].join(''));
-        return;
-      }
-
       var opts = {
         err: error_to_send,
         extra_values: {
@@ -246,17 +244,7 @@ describe('Sender:', function() {
     //FIXME: should create the log file
     it("should success when send in background", function() {
       var sender = new Sender({}, { logger });
-
-      //    $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
-      var entrypoint = process.env.ENTRYPOINT;
-      if (!entrypoint) {
-        console.log(['> To run this test need TOKEN env. \n',
-          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
-          ].join(''));
-        return;
-      }
-
-      var json = {
+      var json   = {
         request_opts: {
           method: 'post',
           url: entrypoint,
@@ -288,12 +276,12 @@ describe('Sender:', function() {
         }
       };
 
-      var LOG_ERROR_PATH = '/tmp/crash-report-sender.log';
+      let log_file = sender.logger.filename;
 
-      return fsAsync.exists(LOG_ERROR_PATH)
+      return fsAsync.exists(log_file)
         .then((exists) => {
           if (exists) {
-            return fsAsync.remove(LOG_ERROR_PATH);
+            return fsAsync.remove(log_file);
           }
         })
         .then(() => {
@@ -306,7 +294,7 @@ describe('Sender:', function() {
           return BB.delay(1000);
         })
         .then(() => {
-          return fsAsync.exists(LOG_ERROR_PATH);
+          return fsAsync.exists(log_file);
         })
         .then((exists) => {
           h.expect(exists).to.eql(false);
