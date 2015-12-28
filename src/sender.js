@@ -147,6 +147,7 @@ export default class Sender {
       var buff = Buffer(JSON.stringify(data));
       pipe.write(buff);
       child.unref();
+      // pipe.destroy();
 
       resolve(0);
     });

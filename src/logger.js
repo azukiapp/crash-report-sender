@@ -37,10 +37,6 @@ export default class LoggerWraper {
     }
   }
 
-  flush() {
-    this.logger.flush();
-  }
-
   _parseWhere(whereStr) {
     return '{ ' + whereStr.join(', ') + ' } -> ';
   }
