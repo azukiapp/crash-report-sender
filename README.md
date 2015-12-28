@@ -47,11 +47,11 @@ gulp
 
 #### Test (with integration test)
 
-> to run integration test you need set `ENTRYPOINT` env
+> to run integration test you need set `CRASH_REPORT_ENTRYPOINT` env
 
 e.g.:
 ```sh
-ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
+CRASH_REPORT_ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp
 ```
 
 #### Publish

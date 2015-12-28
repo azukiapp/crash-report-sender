@@ -135,11 +135,11 @@ describe('Sender:', function() {
     };
 
     before(() => {
-      real_data.url = process.env.ENTRYPOINT;
+      real_data.url = process.env.CRASH_REPORT_ENTRYPOINT;
       if (!real_data.url) {
         throw new Error([
           '> To run this test need TOKEN env. \n',
-          '> ex: $ ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
+          '> ex: $ CRASH_REPORT_ENTRYPOINT=http://api.io/report/uruwhswaB0z3NMBnIxlPV8xXcy+98FBV gulp test'
         ].join(''));
       }
     });
