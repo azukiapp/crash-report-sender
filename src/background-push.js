@@ -7,8 +7,8 @@ require('source-map-support').install();
 let stream  = new net.Socket({ fd: 3 });
 
 function send(data) {
-  let sender = new Sender({}, data['logger_opts']);
-  sender._send_now(data['data_send'])
+  let sender = new Sender({}, data.logger_opts);
+  sender._send_now(data.data_send)
     .catch((error) => {
       sender.logger.error(['_background-push'], error);
     })

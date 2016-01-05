@@ -1,11 +1,7 @@
 import h from './spec_helper';
 import Sender from '../src/sender';
-import Logger from '../src/logger';
 import fsAsync from 'file-async';
-import BB from 'bluebird';
-import winston from 'winston';
 import clone from 'lodash.clone';
-import fs from 'fs';
 
 describe('Sender:', function() {
   var logger, log_file, sender;

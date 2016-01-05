@@ -47,7 +47,7 @@ export default class LoggerWraper {
 
     opts = merge({}, {
       console: true,
-    }, opts)
+    }, opts);
 
     // Log in console?
     if (opts.console) {

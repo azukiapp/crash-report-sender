@@ -62,6 +62,7 @@ export default class Sender {
 
         resolve(this.payload);
       });
+      return null;
     });
   }
 
@@ -168,4 +169,4 @@ export default class Sender {
       }
     });
   }
-};
+}
