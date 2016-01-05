@@ -1,6 +1,6 @@
 {
   "name": "crash-report-sender",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "crash report sender",
   "main": "index.js",
   "dependencies": {
